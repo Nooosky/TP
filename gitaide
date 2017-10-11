@@ -2,3 +2,5 @@ svn checkout > git clone
 svn add > git add
 svn commit ..
 git push
+
+Pour ajouter > git add + git commit + git push
