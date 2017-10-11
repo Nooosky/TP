@@ -1,8 +1,14 @@
-svn checkout > git clone
-svn add > git add
-svn commit ..
-git push
+Ajouter un depot :
+git clone <URL>
 
-pour supprimer > git rm + git commit + git push
-Pour ajouter > git add + git commit + git push
+Ajouter un fichier :
 
+-git add <Nom du fichier>
+-git commit -m "Added <Nom du fichier>"
+-git push
+
+Supprimer un fichier :
+
+-git rm <Nom du fichier>
+-git commit -m "Removed <Nom du fichier>"
+-git push
