@@ -12,3 +12,7 @@ Supprimer un fichier :
 -git rm <Nom du fichier>
 -git commit -m "Removed <Nom du fichier>"
 -git push
+
+Rappatrier les données :
+
+git pull
