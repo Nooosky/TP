@@ -3,4 +3,5 @@ svn add > git add
 svn commit ..
 git push
 
+rules :
 Pour ajouter > git add + git commit + git push
