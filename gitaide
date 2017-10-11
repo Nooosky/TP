@@ -1,0 +1,4 @@
+svn checkout > git clone
+svn add > git add
+svn commit ..
+git push
