@@ -16,12 +16,14 @@ void fa_create(struct fa *self, size_t alpha_count, size_t state_count){
 	}
 	
 	//Allocation du tableau de transitions #PasFacile
+		//Allocation pour chaque état
 	self->transitions = calloc(state_count, sizeof(state_set *));
 	
 	for (i = 0; i < self->alpha_count; i++){
-	
+		//Allocation pour chaque alpha de chaque état
 		self->transitions[i] = calloc(alpha_count, sizeof(state_set));
 		
+		//Initialisation de chaque state_set des transitions
 		int j;
 		for (j = 0; j < alpha_count; j++){
 		
@@ -29,15 +31,44 @@ void fa_create(struct fa *self, size_t alpha_count, size_t state_count){
 			self->transitions[i][j].capacity = 1;
 			self->states = calloc(capacity, sizeof(size_t));
 		
-		}
-		
+		}	
 	}
-	
-	
+}
+
+void fa_destroy(struct fa *self){
+
+	free(self->states);
+	free(self->transitions);
+	free(self);
+}
+
+//Ajou d'un été initial
+void fa_set_state_initial(struct fa *self, size_t state){
+
+	self->states[state].is_initial = true;
 
 }
 
-void fa_destroy(struct fa *self);
+//Ajout d'un état final
+void fa_set_state_final(struct fa *self, size_t state){
 
-void fa_set_state_initial(struct fa *self, size_t state);
-void fa_set_state_final(struct fa *self, size_t state);
+	self->states[state].is_initial = true;
+}
+
+//Ajout d'une transition
+void fa_add_transition(struct fa *self, size_t from, char alpha, size_t to){
+
+	alphaletter = alpha-(int)a;
+
+	self->transition[from][alphaletter].states[size] = to;
+	self->transition[from][alphaletter].size++;
+	
+	if (self->size == self->capacity)
+	{
+		self->capacity *= 2;
+		size_t *data = calloc(self->capacity, sizeof(size_t));
+		memcpy(data, self->states, self->size * sizeof(size_t));
+		free(self->states);
+		self->states = data;
+	}
+}
