@@ -15,8 +15,7 @@ struct fa {
 	size_t alpha_count;
 	size_t state_count;
 
-	bool *initial_states;
-	bool *final_states;
+	struct state *states;
 	
 	struct state_set **transitions;
 };
