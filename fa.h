@@ -1,7 +1,11 @@
 #ifndef FA_H
 #define FA_H
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <stdbool.h>
+#include <sys/types.h>
+#include <string.h>
 
 struct state {
 
@@ -12,12 +16,12 @@ struct state {
 
 struct fa {
 
-	size_t alpha_count;
-	size_t state_count;
+	size_t alpha_count; //Taille de l'alphabet
+	size_t state_count; //Nombre d'etats de l'automate
 
-	struct state *states;
-	
-	struct state_set **transitions;
+	struct state *states; //Ensemble d'etats
+
+	struct state_set **transitions; //Ensemble de transitions
 };
 
 struct state_set {
@@ -25,7 +29,7 @@ struct state_set {
 	size_t size;
 	size_t capacity;
 	size_t *states;
-}
+};
 
 void fa_create(struct fa *self, size_t alpha_count, size_t state_count);
 
