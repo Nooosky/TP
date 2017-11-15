@@ -3,8 +3,8 @@
 //Création et initialisation de l'automate
 void fa_create(struct fa *self, size_t alpha_count, size_t state_count){
 
-	self->alpha_count = alpha_count;
-	self->state_count = state_count;
+	self->alpha_count = alpha_count;//Taille de l'alphabet utilise
+	self->state_count = state_count;//Nombre d'etats de l'automate
 
 	self->states = calloc(self->state_count, sizeof(struct state));
 
