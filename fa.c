@@ -19,7 +19,7 @@ void fa_create(struct fa *self, size_t alpha_count, size_t state_count){
 		//Allocation pour chaque état
 	self->transitions = calloc(state_count, sizeof(struct state_set *));
 
-	for (i = 0; i < self->alpha_count; i++){
+	for (i = 0; i < state_count; i++){
 		//Allocation pour chaque alpha de chaque état
 		self->transitions[i] = calloc(alpha_count, sizeof(struct state_set));
 
@@ -29,7 +29,7 @@ void fa_create(struct fa *self, size_t alpha_count, size_t state_count){
 
 			self->transitions[i][j].size = 0;
 			self->transitions[i][j].capacity = 1;
-			self->states = calloc(self->transitions[i][j].capacity, sizeof(size_t));
+			self->transitions[i][j].states = calloc(self->transitions[i][j].capacity, sizeof(size_t));
 
 		}
 	}
@@ -66,10 +66,10 @@ void fa_add_transition(struct fa *self, size_t from, char alpha, size_t to){
 	if (self->transitions[from][alphaletter].size == self->transitions[from][alphaletter].capacity)
 	{
 		self->transitions[from][alphaletter].capacity *= 2;
-		struct state *data = calloc(self->transitions[from][alphaletter].capacity, sizeof(struct state));
-		memcpy(data, self->states, self->transitions[from][alphaletter].size * sizeof(struct state));
-		free(self->states);
-		self->states = data;
+		size_t *data = calloc(self->transitions[from][alphaletter].capacity, sizeof(size_t));
+		memcpy(data, self->transitions[from][alphaletter].states, self->transitions[from][alphaletter].size * sizeof(struct state));
+		free(self->transitions[from][alphaletter].states);
+		self->transitions[from][alphaletter].states = data;
 	}
 }
 
