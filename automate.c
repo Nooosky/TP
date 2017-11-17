@@ -21,7 +21,7 @@ int main(int argc, char **argv){
 	fa_add_transition(automate,2,'b',4);
 	fa_add_transition(automate,3,'a',3);
 	fa_add_transition(automate,3,'b',4);
-	fa_add_transition(automate,4,'b',4);
+	fa_add_transition(automate,4,'a',4);
 
 	fa_pretty_print(automate, stdout);
 

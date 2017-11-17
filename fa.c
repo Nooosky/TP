@@ -52,13 +52,13 @@ void fa_set_state_initial(struct fa *self, size_t state){
 //Ajout d'un état final
 void fa_set_state_final(struct fa *self, size_t state){
 
-	self->states[state].is_initial = true;
+	self->states[state].is_final = true;
 }
 
 //Ajout d'une transition
 void fa_add_transition(struct fa *self, size_t from, char alpha, size_t to){
 
-	int alphaletter = (int)(alpha-(int)'a');
+	int alphaletter = ((int)alpha-(int)'a');
 
 	self->transitions[from][alphaletter].states[self->transitions[from][alphaletter].size] = to;
 	self->transitions[from][alphaletter].size++;
@@ -76,15 +76,17 @@ void fa_add_transition(struct fa *self, size_t from, char alpha, size_t to){
 //Affichage simple d'un automate
 void fa_pretty_print(const struct fa *self, FILE *out){
 
+	size_t i;
+
 	fprintf(out,"Intial states :\n");
-	for (size_t i = 0; i < self->alpha_count; i++) {
+	for (i = 0; i < self->state_count; i++) {
 		if (self->states[i].is_initial) {
 			fprintf(out,"	%zu",i);
 		}
 	}
 
 	fprintf(out,"\nFinal states :\n");
-	for (size_t i = 0; i < self->alpha_count; i++) {
+	for (i = 0; i < self->state_count; i++) {
 		if (self->states[i].is_final) {
 			fprintf(out,"	%zu",i);
 		}
@@ -94,8 +96,8 @@ void fa_pretty_print(const struct fa *self, FILE *out){
 	for (size_t current_state = 0; current_state < self->state_count; current_state++) {
 		fprintf(out,"	For state %zu :\n",current_state);
 		for (size_t current_letter = 0; current_letter < self->alpha_count; current_letter++) {
-			fprintf(out,"		For letter %c :",(char)(current_letter-(int)'a'));
-			for (size_t dest_state = 0; dest_state < self->transitions[current_state][current_letter].size-1; dest_state++) {
+			fprintf(out,"		For letter %c :",(char)(current_letter+(int)'a'));
+			for (size_t dest_state = 0; dest_state < self->transitions[current_state][current_letter].size; dest_state++) {
 				fprintf(out,"	%zu",self->transitions[current_state][current_letter].states[dest_state]);
 			}
 			fprintf(out, "\n");
