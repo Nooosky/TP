@@ -68,9 +68,17 @@ void fa_add_transition(struct fa *self, size_t from, char alpha, size_t to){
 		self->transitions[from][alphaletter].capacity *= 2;
 		size_t *data = calloc(self->transitions[from][alphaletter].capacity, sizeof(size_t));
 		memcpy(data, self->transitions[from][alphaletter].states, self->transitions[from][alphaletter].size * sizeof(size_t));
+<<<<<<< HEAD
+=======
+
+		printf("From %zu with %c to %zu = %zu\n", from, alpha, to, self->transitions[from][alphaletter].states[self->transitions[from][alphaletter].size-1]);
+		printf("From %zu with %c to %zu = %zu\n", from, alpha, to, data[self->transitions[from][alphaletter].size-1]);
+
+>>>>>>> 02d42c3b46a589f2b7df1b18b8ae7ea832b1f20e
 		free(self->transitions[from][alphaletter].states);
 		self->transitions[from][alphaletter].states = data;
 	}
+
 }
 
 //Affichage simple d'un automate
