@@ -1,18 +1,24 @@
 Ajouter un depot :
-git clone <URL>
+- git clone <URL>
 
 Ajouter un fichier :
 
--git add <Nom du fichier>
--git commit -m "Added <Nom du fichier>"
--git push
+- git add <Nom du fichier>
 
 Supprimer un fichier :
 
--git rm <Nom du fichier>
--git commit -m "Removed <Nom du fichier>"
--git push
+- git rm <Nom du fichier>
+
+Envoyer des données
+
+//Pour envoyer tous les fichiers suivis qui ont été modifiés
+- git commit -am "commentaire"	
+//Ou pour envoyer seulement les fichiers choisis
+- git commit fichier_1 fichier_2 ... -m "commentaire"
+
+//Puis
+- git push
 
 Rappatrier les données :
 
-git pull
+- git pull
