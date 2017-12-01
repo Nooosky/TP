@@ -42,5 +42,7 @@ void fa_add_transition(struct fa *self, size_t from, char alpha, size_t to);
 
 void fa_pretty_print(const struct fa *self, FILE *out);
 
+void fa_dot_print(const struct fa *self, FILE *out);
+
 
 #endif //FA_H
