@@ -39,6 +39,17 @@ int main(int argc, char **argv){
 	if (fa_is_complete(automate))
 		printf("Automate complet\n");
 
+	FILE * graph;
+	graph = fopen("automate.dot", "w");
+
+	fa_dot_print(automate, graph);
+
+	int ret = fclose(graph);
+	if (ret == -1) {
+		perror("fclose");
+		exit(1);
+	}
+
 
 	return 0;
 }

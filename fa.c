@@ -245,3 +245,33 @@ void fa_pretty_print(const struct fa *self, FILE *out){
 	}
 
 }
+
+
+void fa_dot_print(const struct fa *self, FILE *out){
+
+	size_t i;
+
+	fprintf(out,"digraph finite_state_machine {\nrankdir=LR;\nsize=\"8,5\"\nnode [shape = doublecircle];\n");
+	for (i = 0; i < self->state_count; i++) {
+		if (self->states[i].is_final) {
+			fprintf(out,"	%zu",i);
+		}
+	}
+
+	fprintf(out,";\nnode [shape = circle];\n");
+	for (i = 0; i < self->state_count; i++) {
+		if (self->states[i].is_initial) {
+			fprintf(out,"P%zu [shape = point, style=filed,color=white];\nP%zu -> %zu [ label = \"\" ];\n",i,i,i);
+		}
+	}
+
+	//fprintf(out,"Transitions :\n");
+	for (size_t current_state = 0; current_state < self->state_count; current_state++) {
+		for (size_t current_letter = 0; current_letter < self->alpha_count; current_letter++) {
+			for (size_t dest_state = 0; dest_state < self->transitions[current_state][current_letter].size; dest_state++) {
+				fprintf(out,"%zu -> %zu [ label = \"%c\" ];\n",current_state ,self->transitions[current_state][current_letter].states[dest_state],((char)current_letter+'a'));
+			}
+		}
+	}
+	fprintf(out, "}");
+}
