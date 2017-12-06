@@ -169,11 +169,11 @@ bool fa_is_complete(const struct fa *self){
 void fa_make_complete(const struct fa *self){
 
 	if (!fa_is_complete(self)){
-/*
+
 		//Création état poubelle
 		self->state_count++;
 
-		size_t *data = calloc(self->state_count, sizeof(state_set *));
+		state_set *data = calloc(self->state_count, sizeof(state_set *));
 		memcpy(data, self->transitions, self->state_count-1 * sizeof(struct state_set *));
 		free(self->transitions);
 		self->transitions= data;
@@ -192,22 +192,11 @@ void fa_make_complete(const struct fa *self){
 
 		self->states = calloc(self->state_count, sizeof(struct state));
 
-		size_t *data = calloc(self->state_count, sizeof(struct state));
+		struct state *data = calloc(self->state_count, sizeof(struct state));
 		memcpy(data, self->states, self->state_count-1 * sizeof(struct state));
 		free(self->states);
-		self->states= data;
-*/
+		self->states = data;
 
-		//Add transitions
-		int i;
-		for (i=0; i < self->state_count; i++){
-			int j;
-			for (j=0; j < self->alpha_count; j++){
-				if (self->transitions[i][j].size < 1){
-					//fa_add_transition(self,i,(char)(j+(int)'a'), self->state_count-1)
-				}
-			}
-		}
 	}
 
 }

@@ -48,14 +48,11 @@ size_t fa_count_transitions(const struct fa *self);
 
 void fa_pretty_print(const struct fa *self, FILE *out);
 
-<<<<<<< HEAD
 bool fa_is_deterministic(const struct fa *self);
 bool fa_is_complete(const struct fa *self);
 void fa_make_complete(struct fa *self);
 
-=======
 void fa_dot_print(const struct fa *self, FILE *out);
->>>>>>> 1e92dc775a445f7ec35929893a027782073bf364
 
 
 #endif //FA_H
