@@ -6,6 +6,7 @@
 #include <stdbool.h>
 #include <sys/types.h>
 #include <string.h>
+#include <stdbool.h>
 
 struct state {
 
@@ -38,9 +39,19 @@ void fa_destroy(struct fa *self);
 void fa_set_state_initial(struct fa *self, size_t state);
 void fa_set_state_final(struct fa *self, size_t state);
 
+void fa_remove_state(struct fa *self, size_t state);
+
 void fa_add_transition(struct fa *self, size_t from, char alpha, size_t to);
+void fa_remove_transition(struct fa *self, size_t from, char alpha, size_t to);
+
+size_t fa_count_transitions(const struct fa *self);
 
 void fa_pretty_print(const struct fa *self, FILE *out);
+
+bool fa_is_deterministic(const struct fa *self);
+bool fa_is_complete(const struct fa *self);
+void fa_make_complete(struct fa *self);
+
 
 
 #endif //FA_H

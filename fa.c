@@ -42,7 +42,7 @@ void fa_destroy(struct fa *self){
 	free(self);
 }
 
-//Ajou d'un été initial
+//Ajout d'un été initial
 void fa_set_state_initial(struct fa *self, size_t state){
 
 	self->states[state].is_initial = true;
@@ -53,6 +53,19 @@ void fa_set_state_initial(struct fa *self, size_t state){
 void fa_set_state_final(struct fa *self, size_t state){
 
 	self->states[state].is_final = true;
+}
+
+
+void fa_remove_state(struct fa *self, size_t state){
+
+	int i;
+	for (i=state; i < self->state_count-1; i++){
+		self->states[i] = self->states[i+1];
+		self->transitions[i] = self->transitions[i+1];
+	}
+
+	self->state_count--;
+
 }
 
 //Ajout d'une transition
@@ -77,6 +90,128 @@ void fa_add_transition(struct fa *self, size_t from, char alpha, size_t to){
 	}
 
 }
+
+void fa_remove_transition(struct fa *self, size_t from, char alpha, size_t to){
+
+	int alphaletter = ((int)alpha-(int)'a');
+
+	int i;
+	for (i = 0; i < self->transitions[from][alphaletter].size; i++){
+
+		if (self->transitions[from][alphaletter].states[i] == to){
+
+			int j;
+			for (j=i; j < self->transitions[from][alphaletter].size-1; j++){
+				self->transitions[from][alphaletter].states[j] = self->transitions[from][alphaletter].states[j+1];
+			}
+
+			self->transitions[from][alphaletter].size--;
+
+		}
+
+	}
+
+}
+
+
+size_t fa_count_transitions(const struct fa *self){
+
+	size_t res = 0;
+
+	int i;
+	for (i=0; i < self->state_count; i++){
+		int j;
+		for (j=0; j < self->alpha_count; j++){
+			res += self->transitions[i][j].size;
+		}
+	}
+
+	return res;
+}
+
+
+bool fa_is_deterministic(const struct fa *self){
+
+	bool res = true;
+
+	int i;
+	for (i=0; i < self->state_count; i++){
+		int j;
+		for (j=0; j < self->alpha_count; j++){
+			if (self->transitions[i][j].size > 1){
+				res = false;
+				break;
+			}
+		}
+	}
+
+	return res;
+}
+
+bool fa_is_complete(const struct fa *self){
+
+	bool res = true;
+
+	int i;
+	for (i=0; i < self->state_count; i++){
+		int j;
+		for (j=0; j < self->alpha_count; j++){
+			if (self->transitions[i][j].size < 1){
+				res = false;
+				break;
+			}
+		}
+	}
+
+	return res;
+}
+
+void fa_make_complete(const struct fa *self){
+
+	if (!fa_is_complete(self)){
+/*
+		//Création état poubelle
+		self->state_count++;
+
+		size_t *data = calloc(self->state_count, sizeof(state_set *));
+		memcpy(data, self->transitions, self->state_count-1 * sizeof(struct state_set *));
+		free(self->transitions);
+		self->transitions= data;
+
+		//Allocation pour chaque alpha de l'état
+		self->transitions[state_count-1] = calloc(alpha_count, sizeof(struct state_set));
+
+		//Initialisation du state_set des transitions
+		int j;
+		for (j = 0; j < alpha_count; j++){
+			self->transitions[state_count-1][j].size = 0;
+			self->transitions[state_count-1][j].capacity = 1;
+			self->transitions[state_count-1][j].states = calloc(self->transitions[i][j].capacity, sizeof(size_t));
+		}
+
+
+		self->states = calloc(self->state_count, sizeof(struct state));
+
+		size_t *data = calloc(self->state_count, sizeof(struct state));
+		memcpy(data, self->states, self->state_count-1 * sizeof(struct state));
+		free(self->states);
+		self->states= data;
+*/
+
+		//Add transitions
+		int i;
+		for (i=0; i < self->state_count; i++){
+			int j;
+			for (j=0; j < self->alpha_count; j++){
+				if (self->transitions[i][j].size < 1){
+					//fa_add_transition(self,i,(char)(j+(int)'a'), self->state_count-1)
+				}
+			}
+		}
+	}
+
+}
+
 
 //Affichage simple d'un automate
 void fa_pretty_print(const struct fa *self, FILE *out){
