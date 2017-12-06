@@ -1,20 +1,24 @@
 CC = gcc
 CFLAGS = -g -Wall -std=c99
 LDFLAGS = -g
+SRC = ./src
+BIN = ./bin
+INC = ./include
 FA = fa
 AUTO = automate
 
 
 
-all : $(AUTO) clean
+all : $(AUTO)
 
-$(AUTO) : $(AUTO).o $(FA).o
+
+$(AUTO) : $(BIN)/$(AUTO).o $(BIN)/$(FA).o
 	$(CC) $(LDFLAGS) -o $(AUTO) $^
 
-$(FA).o : $(FA).c $(FA).h
+$(BIN)/$(FA).o : $(SRC)/$(FA).c $(INC)/$(FA).h
 	$(CC) -c -o $@ $(CFLAGS) $<
 
-$(AUTO).o : $(AUTO).c $(FA).h
+$(BIN)/$(AUTO).o : $(SRC)/$(AUTO).c $(INC)/$(FA).h
 	$(CC) -c -o $@ $(CFLAGS) $<
 
 
