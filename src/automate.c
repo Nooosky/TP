@@ -53,11 +53,7 @@ int main(int argc, char **argv){
 		exit(1);
 	}
 
-<<<<<<< HEAD
-	free(automate);
-=======
 	free(automate);*/
 
->>>>>>> 7361fe31b203e9bb4a41c11f97663a02d66d9b87
 	return 0;
 }
