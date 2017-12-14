@@ -7,6 +7,7 @@
 #include <sys/types.h>
 #include <string.h>
 #include <stdbool.h>
+#include <math.h>
 
 struct state {
 
@@ -66,6 +67,8 @@ bool fa_is_deterministic(const struct fa *self);
 bool fa_is_complete(const struct fa *self);
 void fa_make_complete(struct fa *self);
 bool fa_is_language_empty(const struct fa *self);
+
+void fa_create_deterministic(struct fa *self, const struct fa *nfa);
 
 void fa_remove_non_accessible_states(struct fa *self);
 void fa_remove_non_co_accessible_states(struct fa *self);

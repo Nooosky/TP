@@ -172,7 +172,9 @@ bool fa_is_deterministic(const struct fa *self){
 		}
 	}
 
-	printf("Deterministic automaton\n");
+	if (res)
+		printf("Deterministic automaton\n");
+
 	return res;
 }
 
@@ -285,6 +287,69 @@ bool fa_is_language_empty(const struct fa *self){
 	}
 
 	return empty;
+}
+
+int* finished(int* ** tab, size_t size, const struct fa *nfa){
+
+	size_t i;
+	for (i = 0; i < size; i++){
+		size_t j;
+		for (j = 0; j < nfa->alpha_count; j++){
+			size_t k;
+			bool exists = false;
+			for (k = 0; k < size; k++){
+				if (tab[j+1][i] = tab[0][k]){
+					exists = true;
+				}
+			}
+			if (exists == false){
+				return tab[j+1][i];
+			}
+		}
+	}
+
+	return NULL;
+}
+
+void fa_create_deterministic(struct fa *self, const struct fa *nfa){
+
+	int* ** tableau = calloc(nfa->alpha_count+1, sizeof(int* *));
+
+	size_t rows = pow(2,nfa->state_count);
+
+	size_t i;
+	for (i = 0; i < nfa->alpha_count+1; i++){
+		tableau[i] = calloc(rows, sizeof(int*));
+	}
+
+	for (i = 0; i < rows; i++){
+		tableau[i][0] = calloc(pow(2,nfa->state_count), sizeof(int));
+		tableau[i][1] = calloc(pow(2,nfa->state_count), sizeof(int));
+		tableau[i][2] = calloc(pow(2,nfa->state_count), sizeof(int));
+	}
+
+	size_t tab_size = 1;
+	size_t iter_trans = 0;
+	tableau[0][0][0] = 0;
+
+	for (i = 0; i < self->state_count; i++){
+		if (nfa->states[i].is_final){
+			tableau[0][0][iter_trans++] = i;
+		}
+	}
+
+	size_t iter_etat = 0;
+
+	do {
+
+
+
+
+	}
+	while (finished(tableau, tab_size, nfa));
+
+
+
 }
 
 
@@ -425,7 +490,6 @@ void fa_pretty_print(const struct fa *self, FILE *out){
 
 }
 
-
 void fa_dot_print(const struct fa *self, FILE *out){
 
 	size_t i;
@@ -454,6 +518,7 @@ void fa_dot_print(const struct fa *self, FILE *out){
 	}
 	fprintf(out, "}");
 }
+
 
 void graph_create_from_fa(struct graph *self, const struct fa *automate, bool inverted){
 
