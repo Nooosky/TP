@@ -54,6 +54,6 @@ int main(int argc, char **argv){
 	}
 
 	free(automate);*/
-
+	
 	return 0;
 }
