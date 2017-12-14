@@ -68,6 +68,7 @@ void fa_make_complete(struct fa *self);
 bool fa_is_language_empty(const struct fa *self);
 
 void fa_remove_non_accessible_states(struct fa *self);
+void fa_remove_non_co_accessible_states(struct fa *self);
 
 void fa_dot_print(const struct fa *self, FILE *out);
 

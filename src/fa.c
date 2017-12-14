@@ -63,13 +63,34 @@ void fa_remove_state(struct fa *self, size_t state){
 
 	if (self->state_count > state)
 	{
-		int i;
+		self->state_count--;
+
+		size_t i;
 		for (i=state; i < self->state_count-1; i++){
 			self->states[i] = self->states[i+1];
 			self->transitions[i] = self->transitions[i+1];
 		}
 
-		self->state_count--;
+		if (self->trash_state > state)
+			self->trash_state--;
+
+
+		for (i=0; i < self->state_count; i++){
+			size_t j;
+			for (j=0; j < self->alpha_count; j++){
+				size_t k;
+				for (k=0; k < self->transitions[i][j].size; k++){
+					if (self->transitions[i][j].states[k] > state)
+						self->transitions[i][j].states[k] = self->transitions[i][j].states[k]-1;
+					else if (self->transitions[i][j].states[k] == state)
+						fa_remove_transition(self, i, (char)(j+(int)'a'), k);
+				}
+			}
+		}
+
+		if (self->trash_state != -1 && self->trash_state > state)
+			self->trash_state--;
+
 		printf("State %zu removed\n", state);
 	}
 	else
@@ -189,13 +210,14 @@ void fa_make_complete(struct fa *self){
 			self->states[self->state_count - 1].is_initial = 0;
 			self->states[self->state_count - 1].is_final = 0;
 
+			self->transitions[self->state_count - 1] = (struct state_set *) realloc(self->transitions[self->state_count - 1], self->alpha_count*sizeof(struct state_set));
+
 			size_t i;
 			for (i = 0; i < self->alpha_count; ++i)
 			{
-				self->transitions[i] = (struct state_set *) realloc(self->transitions[i], self->state_count*sizeof(struct state_set));
-				self->transitions[i][self->state_count - 1].size = 1;
-				self->transitions[i][self->state_count - 1].states = (size_t *) malloc(sizeof(size_t));
-				self->transitions[i][self->state_count - 1].states[0] = self->state_count - 1;
+				self->transitions[self->state_count - 1][i].size = 0;
+				self->transitions[self->state_count - 1][i].capacity = 1;
+				self->transitions[self->state_count - 1][i].states = (size_t *) malloc(sizeof(size_t));
 			}
 
 			self->trash_state = self->state_count - 1;
@@ -215,6 +237,7 @@ void fa_make_complete(struct fa *self){
 		}
 	}
 
+	fa_set_state_final(self, self->trash_state);
 	fa_is_complete(self);
 }
 
@@ -267,6 +290,8 @@ bool fa_is_language_empty(const struct fa *self){
 
 void fa_remove_non_accessible_states(struct fa *self){
 
+	printf("Removing non-accessible states\n");
+
 	struct graph *gr = (struct graph *) malloc(sizeof(struct graph));
 	graph_create_from_fa(gr, self, false);
 
@@ -300,7 +325,68 @@ void fa_remove_non_accessible_states(struct fa *self){
 
 	for (i = 0; i < self->state_count; i++){
 		if (!visited_states[i]){
-			fa_remove_state(self, (size_t)i);
+			fa_remove_state(self, i);
+			graph_create_from_fa(gr, self, false);
+
+			for (i = 0; i < nb_initial_states; i++){
+				graph_depth_first_search(gr, initial_states[i], visited_states);
+			}
+		}
+	}
+}
+
+void fa_remove_non_co_accessible_states(struct fa *self){
+
+	printf("Removing non-co-accessible states\n");
+
+	struct graph *gr = (struct graph *) malloc(sizeof(struct graph));
+	graph_create_from_fa(gr, self, false);
+
+	size_t i, nb_final_states = 0;
+	for (i = 0; i < self->state_count; i++)
+	{
+		if (self->states[i].is_final)
+			nb_final_states++;
+	}
+
+	size_t iter_final = 0;
+	size_t final_states[nb_final_states];
+
+	for (i = 0; i < self->state_count; i++)
+	{
+		if (self->states[i].is_final){
+			final_states[iter_final] = i;
+			iter_final++;
+		}
+	}
+
+	for (i = 0; i < self->state_count; i++){
+
+		if (!self->states[i].is_final){
+
+			bool path = false;
+			size_t j;
+			for (j = 0; j < nb_final_states; j++){
+				if (graph_has_path(gr, i, final_states[j]))
+					path = true;
+			}
+
+			if (!path){
+				fa_remove_state(self, i);
+				graph_create_from_fa(gr, self, false);
+
+				iter_final = 0;
+				size_t k;
+				for (k = 0; k < self->state_count; k++)
+				{
+					if (self->states[k].is_final){
+						final_states[iter_final] = k;
+						iter_final++;
+					}
+				}
+
+				i = 0;
+			}
 		}
 	}
 }
@@ -392,6 +478,7 @@ void graph_create_from_fa(struct graph *self, const struct fa *automate, bool in
 		}
 
 
+
 		self->state[i].next = (struct state_node *) calloc(self->state[i].nb_next, sizeof(struct state_node));
 
 		size_t trans = 0;
@@ -412,7 +499,7 @@ void graph_depth_first_search(const struct graph *self, size_t state, bool *visi
 	size_t i;
 	for (i = 0; i < self->state[state].nb_next; i++){
 		if (visited[self->state[state].next[i].nb] == false){
-			graph_depth_first_search(self, self->state[state].next->nb, visited);
+			graph_depth_first_search(self, self->state[state].next[i].nb, visited);
 		}
 	}
 }

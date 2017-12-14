@@ -15,16 +15,16 @@ int main(int argc, char **argv){
 
 	fa_add_transition(automate,0,'a',1);
 	fa_add_transition(automate,0,'a',2);
-	fa_add_transition(automate,0,'b',2);
+	//fa_add_transition(automate,0,'b',2);
 	//fa_add_transition(automate,0,'a',3);
-	fa_add_transition(automate,1,'a',3);
-	fa_add_transition(automate,1,'b',3);
+	fa_add_transition(automate,1,'a',2);
+	fa_add_transition(automate,1,'b',0);
 	fa_add_transition(automate,2,'a',3);
-	//fa_add_transition(automate,2,'b',4);
+	fa_add_transition(automate,2,'b',3);
 	fa_add_transition(automate,3,'a',3);
-	fa_add_transition(automate,3,'b',4);
-	fa_add_transition(automate,4,'a',4);
-	fa_add_transition(automate,4,'b',4);
+	fa_add_transition(automate,3,'b',3);
+	fa_add_transition(automate,4,'a',2);
+	fa_add_transition(automate,4,'b',2);
 	fa_remove_transition(automate,0,'a',2);
 	//fa_add_transition(automate,0,'a',2);
 
@@ -35,7 +35,7 @@ int main(int argc, char **argv){
 	printf("Transition number : %zu\n", fa_count_transitions(automate));
 
 	fa_is_deterministic(automate);
-	fa_make_complete(automate);
+	//fa_make_complete(automate);
 
 	fa_pretty_print(automate, stdout);
 
@@ -44,7 +44,10 @@ int main(int argc, char **argv){
 
 	fa_dot_print(automate, graph);
 
-	fa_remove_non_accessible_states(automate);
+	//fa_remove_non_accessible_states(automate);
+	//fa_pretty_print(automate, stdout);
+	fa_remove_non_co_accessible_states(automate);
+	fa_pretty_print(automate, stdout);
 
 	int ret = fclose(graph);
 	if (ret == -1) {
