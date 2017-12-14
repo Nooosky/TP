@@ -23,6 +23,8 @@ struct fa {
 	struct state *states; //Ensemble d'etats
 
 	struct state_set **transitions; //Ensemble de transitions
+
+	int trash_state; //Si un état poubelle existe alors ≠-1
 };
 
 struct state_set {
@@ -30,6 +32,18 @@ struct state_set {
 	size_t size;
 	size_t capacity;
 	size_t *states;
+};
+
+struct graph {
+	size_t nb_states;
+	struct state_node *state;
+};
+
+struct state_node {
+	size_t nb;
+
+	size_t nb_next;
+	struct state_node *next;
 };
 
 void fa_create(struct fa *self, size_t alpha_count, size_t state_count);
@@ -51,8 +65,16 @@ void fa_pretty_print(const struct fa *self, FILE *out);
 bool fa_is_deterministic(const struct fa *self);
 bool fa_is_complete(const struct fa *self);
 void fa_make_complete(struct fa *self);
+bool fa_is_language_empty(const struct fa *self);
+
+void fa_remove_non_accessible_states(struct fa *self);
 
 void fa_dot_print(const struct fa *self, FILE *out);
+
+void graph_create_from_fa(struct graph *gr, const struct fa *fa, bool inverted);
+void graph_depth_first_search(const struct graph *self, size_t state, bool *visited);
+bool graph_has_path(const struct graph *self, size_t from, size_t to);
+void graph_destroy(struct graph *self);
 
 
 #endif //FA_H
