@@ -33,6 +33,9 @@ void fa_create(struct fa *self, size_t alpha_count, size_t state_count){
 
 		}
 	}
+
+	self->trash_state = -1;
+
 }
 
 void fa_destroy(struct fa *self){
@@ -58,13 +61,19 @@ void fa_set_state_final(struct fa *self, size_t state){
 
 void fa_remove_state(struct fa *self, size_t state){
 
-	int i;
-	for (i=state; i < self->state_count-1; i++){
-		self->states[i] = self->states[i+1];
-		self->transitions[i] = self->transitions[i+1];
-	}
+	if (self->state_count > state)
+	{
+		int i;
+		for (i=state; i < self->state_count-1; i++){
+			self->states[i] = self->states[i+1];
+			self->transitions[i] = self->transitions[i+1];
+		}
 
-	self->state_count--;
+		self->state_count--;
+		printf("State %zu removed\n", state);
+	}
+	else
+		printf("State %zu doesn't exist\n", state);
 
 }
 
@@ -82,12 +91,11 @@ void fa_add_transition(struct fa *self, size_t from, char alpha, size_t to){
 		size_t *data = calloc(self->transitions[from][alphaletter].capacity, sizeof(size_t));
 		memcpy(data, self->transitions[from][alphaletter].states, self->transitions[from][alphaletter].size * sizeof(size_t));
 
-		printf("From %zu with %c to %zu = %zu\n", from, alpha, to, self->transitions[from][alphaletter].states[self->transitions[from][alphaletter].size-1]);
-		printf("From %zu with %c to %zu = %zu\n", from, alpha, to, data[self->transitions[from][alphaletter].size-1]);
-
 		free(self->transitions[from][alphaletter].states);
 		self->transitions[from][alphaletter].states = data;
 	}
+
+	printf("%zu--%c-->%zu\n", from, alpha, to);
 
 }
 
@@ -106,11 +114,8 @@ void fa_remove_transition(struct fa *self, size_t from, char alpha, size_t to){
 			}
 
 			self->transitions[from][alphaletter].size--;
-
 		}
-
 	}
-
 }
 
 
@@ -140,11 +145,13 @@ bool fa_is_deterministic(const struct fa *self){
 		for (j=0; j < self->alpha_count; j++){
 			if (self->transitions[i][j].size > 1){
 				res = false;
+				printf("Non-deterministic automaton\n");
 				break;
 			}
 		}
 	}
 
+	printf("Deterministic automaton\n");
 	return res;
 }
 
@@ -158,47 +165,144 @@ bool fa_is_complete(const struct fa *self){
 		for (j=0; j < self->alpha_count; j++){
 			if (self->transitions[i][j].size < 1){
 				res = false;
+				printf("Non-complete automaton\n");
 				break;
 			}
 		}
 	}
 
+	printf("Complete automaton\n");
 	return res;
 }
 
-void fa_make_complete(const struct fa *self){
+void fa_make_complete(struct fa *self){
 
 	if (!fa_is_complete(self)){
 
-		//Création état poubelle
-		self->state_count++;
+		printf("Automaton completion\n");
 
-		state_set *data = calloc(self->state_count, sizeof(state_set *));
-		memcpy(data, self->transitions, self->state_count-1 * sizeof(struct state_set *));
-		free(self->transitions);
-		self->transitions= data;
+		if (self->trash_state == -1)
+		{
+			self->state_count++;
+			self->states = realloc(self->states, self->state_count * sizeof(struct state));
 
-		//Allocation pour chaque alpha de l'état
-		self->transitions[state_count-1] = calloc(alpha_count, sizeof(struct state_set));
+			self->states[self->state_count - 1].is_initial = 0;
+			self->states[self->state_count - 1].is_final = 0;
 
-		//Initialisation du state_set des transitions
-		int j;
-		for (j = 0; j < alpha_count; j++){
-			self->transitions[state_count-1][j].size = 0;
-			self->transitions[state_count-1][j].capacity = 1;
-			self->transitions[state_count-1][j].states = calloc(self->transitions[i][j].capacity, sizeof(size_t));
+			size_t i;
+			for (i = 0; i < self->alpha_count; ++i)
+			{
+				self->transitions[i] = realloc(self->transitions[i], self->state_count*sizeof(struct state_set));
+				self->transitions[i][self->state_count - 1].size = 1;
+				self->transitions[i][self->state_count - 1].states = (size_t *) malloc(sizeof(size_t));
+				self->transitions[i][self->state_count - 1].states[0] = self->state_count - 1;
+			}
+
+			self->trash_state = self->state_count - 1;
 		}
 
-
-		self->states = calloc(self->state_count, sizeof(struct state));
-
-		struct state *data = calloc(self->state_count, sizeof(struct state));
-		memcpy(data, self->states, self->state_count-1 * sizeof(struct state));
-		free(self->states);
-		self->states = data;
-
+		size_t i;
+		for (i = 0; i < self->state_count; ++i)
+		{
+			size_t j;
+			for (j = 0; j < self->alpha_count; ++j)
+			{
+				if(self->transitions[i][j].size == 0)
+				{
+					fa_add_transition(self, i, (char)(j + 'a'), self->trash_state);
+				}
+			}
+		}
 	}
 
+	fa_is_complete(self);
+}
+
+bool fa_is_language_empty(const struct fa *self){
+
+	bool empty = true;
+
+	struct graph *gr = malloc(sizeof(struct graph));
+	graph_create_from_fa(gr, self, false);
+
+	size_t i, nb_initial_states = 0, nb_final_states = 0;
+	for (i = 0; i < self->state_count; i++)
+	{
+		if (self->states[i].is_initial)
+			nb_initial_states++;
+		if (self->states[i].is_final)
+			nb_final_states++;
+	}
+
+	size_t initial_states[nb_initial_states];
+	size_t final_states[nb_final_states];
+
+	size_t iter_init = 0, iter_final = 0;
+
+	for (i = 0; i < self->state_count; i++)
+	{
+		if (self->states[i].is_initial){
+			initial_states[iter_init] = i;
+			iter_init++;
+		}
+		if (self->states[i].is_final){
+			final_states[iter_final] = i;
+			iter_final++;
+		}
+	}
+
+	for (i = 0; i < nb_initial_states; i++)
+	{
+		size_t j;
+		for (j = 0; j < nb_final_states; j++)
+		{
+			if (graph_has_path(gr, initial_states[i], final_states[j]))
+				empty = false;
+		}
+	}
+
+	return empty;
+}
+
+
+void fa_remove_non_accessible_states(struct fa *self)
+{
+	struct graph *gr = malloc(sizeof(struct graph));
+	graph_create_from_fa(gr, self, false);
+
+	size_t i, nb_initial_states = 0;
+	for (i = 0; i < self->state_count; i++)
+	{
+		if (self->states[i].is_initial)
+			nb_initial_states++;
+	}
+
+	size_t iter_init = 0;
+	size_t initial_states[nb_initial_states];
+
+	for (i = 0; i < self->state_count; i++)
+	{
+		if (self->states[i].is_initial){
+			initial_states[iter_init] = i;
+			iter_init++;
+		}
+	}
+
+	bool visited_states[self->state_count];
+
+	for (i = 0; i < self->state_count; i++){
+		visited_states[i] = false;
+	}
+
+	for (i = 0; i < nb_initial_states; i++){
+		graph_depth_first_search(gr, initial_states[i], visited_states);
+	}
+
+	for (i = 0; i < self->state_count; i++){
+		if (!visited_states[i]){
+			fa_remove_state(self, (size_t)i);
+		}
+	}
 }
 
 
@@ -263,4 +367,77 @@ void fa_dot_print(const struct fa *self, FILE *out){
 		}
 	}
 	fprintf(out, "}");
+}
+
+void graph_create_from_fa(struct graph *self, const struct fa *automate, bool inverted){
+
+	//Initialisation nombre d'états
+	self->nb_states = automate->state_count;
+
+	//Allocation du tableaux contenant les états
+	self->state = calloc(self->nb_states, sizeof(struct state_node));
+
+	size_t i;
+	for(i = 0; i < self->nb_states; i++){
+		self->state[i].nb = i;
+	}
+
+
+	for(i = 0; i < self->nb_states; i++){
+
+		//Initialisation de nb_next, le nombre de transitions de chaque état
+		self->state[i].nb = i;
+		size_t j;
+		for(j = 0; j < automate->alpha_count; j++){
+			self->state[i].nb_next += automate->transitions[i][j].size;
+		}
+
+
+		self->state[i].next = calloc(self->state[i].nb_next, sizeof(struct state_node));
+
+		size_t trans = 0;
+
+		for(j = 0; j < automate->alpha_count; j++){
+			size_t k;
+			for(k = 0; k < automate->transitions[i][j].size; k++){
+				self->state[i].next[trans++] = self->state[automate->transitions[i][j].states[k]];
+			}
+		}
+	}
+}
+
+void graph_depth_first_search(const struct graph *self, size_t state, bool *visited){
+
+	visited[state] = true;
+
+	size_t i;
+	for (i = 0; i < self->state[state].nb_next; i++){
+		if (visited[self->state[state].next->nb] == false){
+			graph_depth_first_search(self, state, visited);
+		}
+	}
+}
+
+bool graph_has_path(const struct graph *self, size_t from, size_t to){
+
+	size_t nbstates = self->nb_states;
+	bool states[nbstates];
+	size_t i;
+	for(i=0; i < nbstates; i++)
+	 	states[i]= false;
+	graph_depth_first_search(self, from, states);
+
+	return (states[to] == true);
+}
+
+void graph_destroy(struct graph *self){
+
+	size_t i;
+	for (i = 0; i < self->nb_states; i++){
+		free(self->state[i].next);
+	}
+
+	free(self->state);
+	free(self);
+
 }
