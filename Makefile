@@ -12,12 +12,12 @@ INC = ./include
 FA = fa
 AUTO = automate
 GTEST=./lib/libgtest.a ./lib/libgtest_main.a
-RUNTESTS_OBJ = tests/src/gtest-all.o tests/testFa.o
+RUNTESTS_OBJ = tests/src/gtest-all.o tests/testsFa.o run_tests.o
 
 all : $(AUTO)
 
 $(AUTO) : $(BIN)/$(FA).o $(BIN)/$(AUTO).o
-	$(CC) $(LDFLAGS) -o $(AUTO) $^
+	$(CC) $(LDFLAGS) -o $(AUTO) $^ -lm
 
 $(BIN)/$(FA).o : $(SRC)/$(FA).c $(INC)/$(FA).h
 	$(CC) -c -o $@ $(CFLAGS) $<
@@ -26,13 +26,13 @@ $(BIN)/$(AUTO).o : $(SRC)/$(AUTO).c $(INC)/$(FA).h
 	$(CC) -c -o $@ $(CFLAGS) $<
 
 maketesto:
-	g++ -o -Wall ./tests/*.cc
+	g++ -c ./tests/testsFa.cpp -o ./tests/testsFa.o -lgtest -lpthread
 
 test: run_tests
 	./run_tests
 
 run_tests: $(RUNTESTS_OBJ)
-	$(CXX) -o $@ $(RUNTESTS_OBJ) -lpthread
+	$(CXX) -o $@ $(RUNTESTS_OBJ) -L. -lpthread
 
 clean :
 	rm -f ./bin/*.o
