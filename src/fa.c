@@ -6,7 +6,7 @@ void fa_create(struct fa *self, size_t alpha_count, size_t state_count){
 	self->alpha_count = alpha_count;//Taille de l'alphabet utilise
 	self->state_count = state_count;//Nombre d'etats de l'automate
 
-	self->states = calloc(self->state_count, sizeof(struct state));
+	self->states = (struct state *) calloc(self->state_count, sizeof(struct state));
 
 	int i;
 	for (i = 0; i < self->state_count; i++){
@@ -265,8 +265,8 @@ bool fa_is_language_empty(const struct fa *self){
 }
 
 
-void fa_remove_non_accessible_states(struct fa *self)
-{
+void fa_remove_non_accessible_states(struct fa *self){
+
 	struct graph *gr = malloc(sizeof(struct graph));
 	graph_create_from_fa(gr, self, false);
 
@@ -386,7 +386,6 @@ void graph_create_from_fa(struct graph *self, const struct fa *automate, bool in
 	for(i = 0; i < self->nb_states; i++){
 
 		//Initialisation de nb_next, le nombre de transitions de chaque état
-		self->state[i].nb = i;
 		size_t j;
 		for(j = 0; j < automate->alpha_count; j++){
 			self->state[i].nb_next += automate->transitions[i][j].size;
@@ -412,8 +411,8 @@ void graph_depth_first_search(const struct graph *self, size_t state, bool *visi
 
 	size_t i;
 	for (i = 0; i < self->state[state].nb_next; i++){
-		if (visited[self->state[state].next->nb] == false){
-			graph_depth_first_search(self, state, visited);
+		if (visited[self->state[i].next->nb] == false){
+			graph_depth_first_search(self, self->state[state].next->nb, visited);
 		}
 	}
 }

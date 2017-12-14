@@ -38,14 +38,13 @@ int main(int argc, char **argv){
 	fa_make_complete(automate);
 
 	fa_pretty_print(automate, stdout);
-	printf("lesco");
 
 	FILE * graph;
 	graph = fopen("graph/automate.dot", "w");
 
 	fa_dot_print(automate, graph);
 
-	//fa_remove_non_accessible_states(automate);
+	fa_remove_non_accessible_states(automate);
 
 	int ret = fclose(graph);
 	if (ret == -1) {
