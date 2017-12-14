@@ -17,11 +17,11 @@ void fa_create(struct fa *self, size_t alpha_count, size_t state_count){
 
 	//Allocation du tableau de transitions #PasFacile
 		//Allocation pour chaque état
-	self->transitions = calloc(state_count, sizeof(struct state_set *));
+	self->transitions = (struct state_set **) calloc(state_count, sizeof(struct state_set *));
 
 	for (i = 0; i < state_count; i++){
 		//Allocation pour chaque alpha de chaque état
-		self->transitions[i] = calloc(alpha_count, sizeof(struct state_set));
+		self->transitions[i] = (struct state_set *) calloc(alpha_count, sizeof(struct state_set));
 
 		//Initialisation de chaque state_set des transitions
 		int j;
@@ -29,7 +29,7 @@ void fa_create(struct fa *self, size_t alpha_count, size_t state_count){
 
 			self->transitions[i][j].size = 0;
 			self->transitions[i][j].capacity = 1;
-			self->transitions[i][j].states = calloc(self->transitions[i][j].capacity, sizeof(size_t));
+			self->transitions[i][j].states = (size_t *) calloc(self->transitions[i][j].capacity, sizeof(size_t));
 
 		}
 	}
@@ -88,7 +88,7 @@ void fa_add_transition(struct fa *self, size_t from, char alpha, size_t to){
 	if (self->transitions[from][alphaletter].size == self->transitions[from][alphaletter].capacity)
 	{
 		self->transitions[from][alphaletter].capacity *= 2;
-		size_t *data = calloc(self->transitions[from][alphaletter].capacity, sizeof(size_t));
+		size_t *data = (size_t *) calloc(self->transitions[from][alphaletter].capacity, sizeof(size_t));
 		memcpy(data, self->transitions[from][alphaletter].states, self->transitions[from][alphaletter].size * sizeof(size_t));
 
 		free(self->transitions[from][alphaletter].states);
@@ -184,7 +184,7 @@ void fa_make_complete(struct fa *self){
 		if (self->trash_state == -1)
 		{
 			self->state_count++;
-			self->states = realloc(self->states, self->state_count * sizeof(struct state));
+			self->states = (struct state *) realloc(self->states, self->state_count * sizeof(struct state));
 
 			self->states[self->state_count - 1].is_initial = 0;
 			self->states[self->state_count - 1].is_final = 0;
@@ -192,7 +192,7 @@ void fa_make_complete(struct fa *self){
 			size_t i;
 			for (i = 0; i < self->alpha_count; ++i)
 			{
-				self->transitions[i] = realloc(self->transitions[i], self->state_count*sizeof(struct state_set));
+				self->transitions[i] = (struct state_set *) realloc(self->transitions[i], self->state_count*sizeof(struct state_set));
 				self->transitions[i][self->state_count - 1].size = 1;
 				self->transitions[i][self->state_count - 1].states = (size_t *) malloc(sizeof(size_t));
 				self->transitions[i][self->state_count - 1].states[0] = self->state_count - 1;
@@ -222,7 +222,7 @@ bool fa_is_language_empty(const struct fa *self){
 
 	bool empty = true;
 
-	struct graph *gr = malloc(sizeof(struct graph));
+	struct graph *gr = (struct graph *) malloc(sizeof(struct graph));
 	graph_create_from_fa(gr, self, false);
 
 	size_t i, nb_initial_states = 0, nb_final_states = 0;
@@ -267,7 +267,7 @@ bool fa_is_language_empty(const struct fa *self){
 
 void fa_remove_non_accessible_states(struct fa *self){
 
-	struct graph *gr = malloc(sizeof(struct graph));
+	struct graph *gr = (struct graph *) malloc(sizeof(struct graph));
 	graph_create_from_fa(gr, self, false);
 
 	size_t i, nb_initial_states = 0;
@@ -375,7 +375,7 @@ void graph_create_from_fa(struct graph *self, const struct fa *automate, bool in
 	self->nb_states = automate->state_count;
 
 	//Allocation du tableaux contenant les états
-	self->state = calloc(self->nb_states, sizeof(struct state_node));
+	self->state = (struct state_node *) calloc(self->nb_states, sizeof(struct state_node));
 
 	size_t i;
 	for(i = 0; i < self->nb_states; i++){
@@ -392,7 +392,7 @@ void graph_create_from_fa(struct graph *self, const struct fa *automate, bool in
 		}
 
 
-		self->state[i].next = calloc(self->state[i].nb_next, sizeof(struct state_node));
+		self->state[i].next = (struct state_node *) calloc(self->state[i].nb_next, sizeof(struct state_node));
 
 		size_t trans = 0;
 
@@ -411,7 +411,7 @@ void graph_depth_first_search(const struct graph *self, size_t state, bool *visi
 
 	size_t i;
 	for (i = 0; i < self->state[state].nb_next; i++){
-		if (visited[self->state[i].next->nb] == false){
+		if (visited[self->state[state].next[i].nb] == false){
 			graph_depth_first_search(self, self->state[state].next->nb, visited);
 		}
 	}
