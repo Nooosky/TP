@@ -7,13 +7,13 @@ int main(int argc, char **argv){
 
 	struct fa *automate = malloc(sizeof(struct fa));
 
-	fa_create(automate,2,5);
-	fa_set_state_initial(automate,0);
+	//fa_create(automate,2,3);
+	/*fa_set_state_initial(automate,0);
 	fa_set_state_initial(automate,1);
 	fa_set_state_final(automate,1);
-	fa_set_state_final(automate,4);
+	fa_set_state_final(automate,4);*/
 
-	fa_add_transition(automate,0,'a',1);
+	/*fa_add_transition(automate,0,'a',1);
 	fa_add_transition(automate,0,'a',2);
 	//fa_add_transition(automate,0,'b',2);
 	//fa_add_transition(automate,0,'a',3);
@@ -26,28 +26,35 @@ int main(int argc, char **argv){
 	fa_add_transition(automate,4,'a',2);
 	fa_add_transition(automate,4,'b',2);
 	fa_remove_transition(automate,0,'a',2);
-	//fa_add_transition(automate,0,'a',2);
+	//fa_add_transition(automate,0,'a',2);*/
 
-	fa_remove_state(automate, 3);
+	/*fa_add_transition(automate,0,'a',1);
+  fa_add_transition(automate,0,'b',2);
+  fa_add_transition(automate,1,'a',1);
+  fa_add_transition(automate,1,'b',0);
+  fa_add_transition(automate,2,'a',1);
 
-	fa_pretty_print(automate, stdout);
 
-	printf("Transition number : %zu\n", fa_count_transitions(automate));
+	//fa_pretty_print(automate, stdout);
+	fa_make_complete(automate);
 
-	fa_is_deterministic(automate);
-	//fa_make_complete(automate);
+	//fa_pretty_print(automate, stdout);
+	fa_destroy(automate);*/
 
-	fa_pretty_print(automate, stdout);
+	fa_create(automate,2,3);
+  fa_add_transition(automate,0,'a',1);
+  fa_add_transition(automate,0,'b',2);
+  fa_add_transition(automate,1,'a',1);
+  fa_add_transition(automate,1,'b',0);
+  fa_add_transition(automate,2,'a',1);
+
+  fa_make_complete(automate);
+  fa_destroy(automate);
 
 	FILE * graph;
 	graph = fopen("graph/automate.dot", "w");
 
 	fa_dot_print(automate, graph);
-
-	//fa_remove_non_accessible_states(automate);
-	//fa_pretty_print(automate, stdout);
-	fa_remove_non_co_accessible_states(automate);
-	fa_pretty_print(automate, stdout);
 
 	int ret = fclose(graph);
 	if (ret == -1) {

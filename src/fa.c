@@ -38,11 +38,22 @@ void fa_create(struct fa *self, size_t alpha_count, size_t state_count){
 
 }
 
-void fa_destroy(struct fa *self){
+void fa_destroy(struct fa *self)
+{
+  free(self->states);
 
-	free(self->states);
-	free(self->transitions);
-	free(self);
+	size_t i;
+  for (i = 0; i < self->state_count; ++i)
+  {
+		size_t j;
+    for (j = 0; j < self->alpha_count; ++j){
+      free(self->transitions[i][j].states);
+		}
+
+    free(self->transitions[i]);
+  }
+  free(self->transitions);
+  free(self);
 }
 
 //Ajout d'un été initial
@@ -194,7 +205,9 @@ bool fa_is_complete(const struct fa *self){
 		}
 	}
 
-	printf("Complete automaton\n");
+	if (res)
+		printf("Complete automaton\n");
+
 	return res;
 }
 
@@ -289,7 +302,7 @@ bool fa_is_language_empty(const struct fa *self){
 	return empty;
 }
 
-int* finished(int* ** tab, size_t size, const struct fa *nfa){
+/*int* finished(int* ** tab, size_t size, const struct fa *nfa){
 
 	size_t i;
 	for (i = 0; i < size; i++){
@@ -338,7 +351,7 @@ void fa_create_deterministic(struct fa *self, const struct fa *nfa){
 
 	for (i = 0; i < self->state_count; i++){
 		if (nfa->states[i].is_final){
-			new_state[iter_trans++] = i;
+			new_state[iter_trans++] = nfa->transitions[0][0].states[i];
 		}
 	}
 
@@ -359,16 +372,17 @@ void fa_create_deterministic(struct fa *self, const struct fa *nfa){
 
 		iter_trans = 0;
 
-		for (i = 0; i < nfa->alpha_count; i++){
-				tableau[iter_etat][i+1][iter_trans++] = i;
-			}
+		for (i = 0; i < nfa->transitions[iter_etat][iter_alpha].size; i++){
+				tableau[iter_alpha][iter_etat][iter_trans++] = nfa->transitions[iter_etat][iter_alpha].states[i];
+		}
 
 		new_state = finished(tableau, tab_size, nfa);
+
 	}while (!(new_state == NULL && tableau[0][iter_etat+1] == NULL && iter_alpha == nfa->alpha_count));
 
 
 
-}
+}*/
 
 
 void fa_remove_non_accessible_states(struct fa *self){
