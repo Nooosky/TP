@@ -324,6 +324,7 @@ void fa_create_deterministic(struct fa *self, const struct fa *nfa){
 
 	for (i = 0; i < rows; i++){
 		tableau[i][0] = calloc(pow(2,nfa->state_count), sizeof(int));
+		tableau[i][0] = NULL;
 		tableau[i][1] = calloc(pow(2,nfa->state_count), sizeof(int));
 		tableau[i][2] = calloc(pow(2,nfa->state_count), sizeof(int));
 	}
@@ -332,21 +333,40 @@ void fa_create_deterministic(struct fa *self, const struct fa *nfa){
 	size_t iter_trans = 0;
 	tableau[0][0][0] = 0;
 
+
+	int* new_state = (int*) calloc(pow(2,nfa->state_count), sizeof(int));
+
 	for (i = 0; i < self->state_count; i++){
 		if (nfa->states[i].is_final){
-			tableau[0][0][iter_trans++] = i;
+			new_state[iter_trans++] = i;
 		}
 	}
 
 	size_t iter_etat = 0;
+	size_t iter_alpha = 0;
 
 	do {
 
+		tableau[iter_alpha+1][iter_etat] = new_state;
 
+		if (iter_alpha == nfa->alpha_count){
+			iter_etat++;
+			iter_alpha = 0;
+		}
+		else{
+			iter_alpha++;
+		}
 
+		iter_trans = 0;
 
+		for (i = 0; i < nfa->alpha_count; i++){
+				tableau[iter_etat][i+1][iter_trans++] = i;
+			}
+		}
+
+		new_state = finished(tableau, tab_size, nfa);
 	}
-	while (finished(tableau, tab_size, nfa));
+	while (!(new_state == NULL && tableau[0][iter_etat+1] == NULL && iter_alpha == nfa->alpha_count));
 
 
 
