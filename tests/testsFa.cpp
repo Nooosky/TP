@@ -166,19 +166,19 @@ TEST(AutomateTest, TestEstComplet_3) {
 }
 
 
-// TEST(AutomateTest, TestCompletionAutomate) {
-//   struct fa *automate = (struct fa*)malloc(sizeof(struct fa));
-//   fa_create(automate,2,3);
-//   fa_add_transition(automate,0,'a',1);
-//   fa_add_transition(automate,0,'b',2);
-//   fa_add_transition(automate,1,'a',1);
-//   fa_add_transition(automate,1,'b',0);
-//   fa_add_transition(automate,2,'a',1);
-//   ASSERT_FALSE(fa_is_complete(automate));
-//   fa_make_complete(automate);
-//   ASSERT_TRUE(fa_is_complete(automate));
-//   fa_destroy(automate);
-// }
+ TEST(AutomateTest, TestCompletionAutomate) {
+   struct fa *automate = (struct fa*)malloc(sizeof(struct fa));
+   fa_create(automate,2,3);
+   fa_add_transition(automate,0,'a',1);
+   fa_add_transition(automate,0,'b',2);
+   fa_add_transition(automate,1,'a',1);
+   fa_add_transition(automate,1,'b',0);
+   fa_add_transition(automate,2,'a',1);
+   ASSERT_FALSE(fa_is_complete(automate));
+   fa_make_complete(automate);
+   ASSERT_TRUE(fa_is_complete(automate));
+   fa_destroy(automate);
+ }
 
 // //4.2
 // TEST(AutomateTest, TestParcoursProf) {
