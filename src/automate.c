@@ -41,19 +41,19 @@ int main(int argc, char **argv){
 	printf("lesco");
 
 	FILE * graph;
-	graph = fopen("../graph/automate.dot", "w");
+	graph = fopen("graph/automate.dot", "w");
 
-	//fa_dot_print(automate, graph);
+	fa_dot_print(automate, graph);
 
 	//fa_remove_non_accessible_states(automate);
 
-	/*int ret = fclose(graph);
+	int ret = fclose(graph);
 	if (ret == -1) {
 		perror("fclose");
 		exit(1);
 	}
 
-	free(automate);*/
+	free(automate);
 
 	return 0;
 }
