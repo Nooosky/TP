@@ -7,7 +7,6 @@
 #include <sys/types.h>
 #include <string.h>
 #include <stdbool.h>
-#include <math.h>
 
 struct state {
 
