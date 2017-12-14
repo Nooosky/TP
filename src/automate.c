@@ -49,7 +49,6 @@ int main(int argc, char **argv){
   fa_add_transition(automate,2,'a',1);
 
   fa_make_complete(automate);
-  fa_destroy(automate);
 
 	FILE * graph;
 	graph = fopen("graph/automate.dot", "w");
@@ -62,7 +61,7 @@ int main(int argc, char **argv){
 		exit(1);
 	}
 
-	free(automate);
+	fa_destroy(automate);
 
 	return 0;
 }
