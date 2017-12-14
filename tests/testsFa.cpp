@@ -181,14 +181,86 @@ TEST(AutomateTest, TestEstComplet_3) {
  }
 
 // //4.2
-// TEST(AutomateTest, TestParcoursProf) {
-//
-// }
-//
-// TEST(AutomateTest, TestDetectionChemin) {
-//
-// }
-//
+TEST(AutomateTest, TestParcoursProf_1) {
+  struct fa *automate = (struct fa*)malloc(sizeof(struct fa));
+  struct graph *gr = (struct graph*)malloc(sizeof(struct graph));
+  fa_create(automate,2,3);
+  fa_add_transition(automate,0,'a',1);
+  fa_add_transition(automate,1,'a',2);
+  fa_add_transition(automate,2,'a',2);
+  graph_create_from_fa(gr,automate,false);
+  bool tab[automate->state_count];
+  for (size_t i = 0; i < automate->state_count; i++) {
+    tab[i] = false;
+  }
+  graph_depth_first_search(gr,0,tab);
+  ASSERT_TRUE(tab[0]);
+  ASSERT_TRUE(tab[1]);
+  ASSERT_TRUE(tab[2]);
+  for (size_t i = 0; i < automate->state_count; i++) {
+    tab[i] = false;
+  }
+  graph_depth_first_search(gr,1,tab);
+  ASSERT_FALSE(tab[0]);
+  ASSERT_TRUE(tab[1]);
+  ASSERT_TRUE(tab[2]);
+  for (size_t i = 0; i < automate->state_count; i++) {
+    tab[i] = false;
+  }
+  graph_depth_first_search(gr,2,tab);
+  ASSERT_FALSE(tab[0]);
+  ASSERT_FALSE(tab[1]);
+  ASSERT_TRUE(tab[2]);
+  fa_destroy(automate);
+}
+
+TEST(AutomateTest, TestParcoursProf_2) {
+  struct fa *automate = (struct fa*)malloc(sizeof(struct fa));
+  struct graph *gr = (struct graph*)malloc(sizeof(struct graph));
+  fa_create(automate,2,3);
+  graph_create_from_fa(gr,automate,false);
+  bool tab[automate->state_count];
+  for (size_t i = 0; i < automate->state_count; i++) {
+    tab[i] = false;
+  }
+  ASSERT_NO_THROW(graph_depth_first_search(gr,0,tab));
+
+  fa_destroy(automate);
+}
+
+TEST(AutomateTest, TestDetectionChemin) {
+  struct fa *automate = (struct fa*)malloc(sizeof(struct fa));
+  struct graph *gr = (struct graph*)malloc(sizeof(struct graph));
+  fa_create(automate,2,3);
+  fa_add_transition(automate,0,'a',1);
+  fa_add_transition(automate,1,'a',2);
+  fa_add_transition(automate,2,'a',2);
+  graph_create_from_fa(gr,automate,false);
+  bool tab[automate->state_count];
+  for (size_t i = 0; i < automate->state_count; i++) {
+    tab[i] = false;
+  }
+  graph_depth_first_search(gr,0,tab);
+  ASSERT_TRUE(tab[0]);
+  ASSERT_TRUE(tab[1]);
+  ASSERT_TRUE(tab[2]);
+  for (size_t i = 0; i < automate->state_count; i++) {
+    tab[i] = false;
+  }
+  graph_depth_first_search(gr,1,tab);
+  ASSERT_FALSE(tab[0]);
+  ASSERT_TRUE(tab[1]);
+  ASSERT_TRUE(tab[2]);
+  for (size_t i = 0; i < automate->state_count; i++) {
+    tab[i] = false;
+  }
+  graph_depth_first_search(gr,2,tab);
+  ASSERT_FALSE(tab[0]);
+  ASSERT_FALSE(tab[1]);
+  ASSERT_TRUE(tab[2]);
+  fa_destroy(automate);
+}
+
 // TEST(AutomateTest, TestDestrucGraph) {
 //
 // }
