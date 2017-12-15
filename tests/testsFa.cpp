@@ -174,7 +174,7 @@ TEST(AutomateTest, TestEstComplet_3) {
   fa_destroy(automate);
 }
 
-
+// Renvoie une seg fault sur mon poste (LINUX) mais pas sur l'autre poste (MAC)
  TEST(AutomateTest, TestCompletionAutomate) {
    struct fa *automate = (struct fa*)malloc(sizeof(struct fa));
    fa_create(automate,2,3);
@@ -189,7 +189,7 @@ TEST(AutomateTest, TestEstComplet_3) {
    fa_destroy(automate);
  }
 
-// //4.2
+
 TEST(AutomateTest, TestParcoursProf_1) {
   struct fa *automate = (struct fa*)malloc(sizeof(struct fa));
   struct graph *gr = (struct graph*)malloc(sizeof(struct graph));
@@ -218,7 +218,7 @@ TEST(AutomateTest, TestParcoursProf_1) {
   }
   graph_depth_first_search(gr,2,tab);
   ASSERT_FALSE(tab[0]);
-  ASSERT_FALSE(tab[1]);
+  ASSERT_FALSE(tab[1]);// Renvoie une seg fault sur mon poste (LINUX) mais pas sur l'autre poste (MAC)
   ASSERT_TRUE(tab[2]);
   fa_destroy(automate);
 }
@@ -343,6 +343,7 @@ TEST(AutomateTest, TestSupprEtatNonAcces) {
   fa_destroy(automate);
 }
 
+// Renvoie une seg fault sur mon poste (LINUX) mais pas sur l'autre poste (MAC)
 TEST(AutomateTest, TestSupprEtatNonCoAcces) {
   struct fa *automate = (struct fa*)malloc(sizeof(struct fa));
   struct graph *gr = (struct graph*)malloc(sizeof(struct graph));
@@ -357,9 +358,7 @@ TEST(AutomateTest, TestSupprEtatNonCoAcces) {
   fa_add_transition(automate,1,'b',2);
   fa_add_transition(automate,1,'a',3);
   fa_add_transition(automate,2,'a',4);
-      printf("////////////////////////////////////////1\n");
   fa_remove_non_co_accessible_states(automate);
-        printf("////////////////////////////////////////2\n");
   graph_create_from_fa(gr,automate,false);
   ASSERT_EQ(automate->state_count,3);
   for (size_t i = 0; i < automate->state_count; i++) {
