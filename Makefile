@@ -12,7 +12,7 @@ INC = ./include
 FA = fa
 AUTO = automate
 GTEST=./lib/libgtest.a ./lib/libgtest_main.a
-RUNTESTS_OBJ = tests/src/gtest-all.o bin/testsFa.o run_tests.o
+RUNTESTS_OBJ = tests/src/gtest-all.o tests/testsFa.o run_tests.o
 
 all : $(AUTO)
 
@@ -26,7 +26,7 @@ $(BIN)/$(AUTO).o : $(SRC)/$(AUTO).c $(INC)/$(FA).h
 	$(CC) -c -o $@ $(CFLAGS) $<
 
 maketesto:
-	g++ -c ./tests/testsFa.cpp -o ./bin/testsFa.o -lgtest -lpthread
+	g++ -c ./tests/testsFa.cpp -o ./tests/testsFa.o -lgtest -lpthread
 
 test: run_tests
 	./run_tests
