@@ -28,7 +28,7 @@ $(BIN)/$(AUTO).o : $(SRC)/$(AUTO).c $(INC)/$(FA).h
 maketesto:
 	g++ -c ./tests/testsFa.cpp -o ./tests/testsFa.o -lgtest -lpthread
 
-test: maketesto run_tests
+test: run_tests maketesto
 	./run_tests
 
 run_tests: $(RUNTESTS_OBJ)
