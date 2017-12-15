@@ -116,7 +116,7 @@ TEST(AutomateTest, TestCompteurTransition_2) {
   fa_destroy(automate);
 }
 
-TEST(AutomateTest, TestEstDeterimiste_1) {
+TEST(AutomateTest, TestEstDeterministe_1) {
   struct fa *automate = (struct fa*)malloc(sizeof(struct fa));
   fa_create(automate,2,3);
   fa_add_transition(automate,0,'a',1);
@@ -125,7 +125,7 @@ TEST(AutomateTest, TestEstDeterimiste_1) {
   fa_destroy(automate);
 }
 
-TEST(AutomateTest, TestEstDeterimiste_2) {
+TEST(AutomateTest, TestEstDeterministe_2) {
   struct fa *automate = (struct fa*)malloc(sizeof(struct fa));
   fa_create(automate,2,3);
   fa_add_transition(automate,0,'a',1);
