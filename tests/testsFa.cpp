@@ -1,6 +1,15 @@
 #include "../src/fa.c"
 #include <gtest/gtest.h>
 
+/*virtual void SetUp(){
+  struct fa *automate = (struct fa*)malloc(sizeof(struct fa));
+  fa_create(automate,2,3);
+}
+
+virtual void TearDown(struct fa *automate){
+    free(automate);
+}*/
+
 TEST(AutomateTest, TestCreationAutomate) {
   struct fa *automate = (struct fa*)malloc(sizeof(struct fa));
   ASSERT_NO_THROW(fa_create(automate,1,1));
@@ -261,22 +270,116 @@ TEST(AutomateTest, TestDetectionChemin) {
   fa_destroy(automate);
 }
 
-// TEST(AutomateTest, TestDestrucGraph) {
-//
-// }
-//
-// TEST(AutomateTest, TestAccepteLVide) {
-//
-// }
-//
-// TEST(AutomateTest, TestSupprEtatNonAcces) {
-//
-// }
-//
-// TEST(AutomateTest, TestSupprEtatNonCoAcces) {
-//
-// }
-//
+TEST(AutomateTest, TestDestrucGraph) {
+  struct fa *automate = (struct fa*)malloc(sizeof(struct fa));
+  struct graph *gr = (struct graph*)malloc(sizeof(struct graph));
+  fa_create(automate,2,3);
+  fa_add_transition(automate,0,'a',1);
+  fa_add_transition(automate,1,'a',2);
+  fa_add_transition(automate,2,'a',2);
+  graph_create_from_fa(gr,automate,false);
+  ASSERT_NO_THROW(graph_destroy(gr));
+  fa_destroy(automate);
+}
+
+TEST(AutomateTest, TestAccepteLVide_1) {
+  struct fa *automate = (struct fa*)malloc(sizeof(struct fa));
+  fa_create(automate,2,3);
+  fa_add_transition(automate,0,'a',1);
+  fa_add_transition(automate,1,'a',2);
+  fa_add_transition(automate,2,'a',2);
+  ASSERT_TRUE(fa_is_language_empty(automate));
+  fa_destroy(automate);
+}
+
+TEST(AutomateTest, TestAccepteLVide_2) {
+  struct fa *automate = (struct fa*)malloc(sizeof(struct fa));
+  fa_create(automate,1,1);
+  fa_set_state_initial(automate,0);
+  fa_set_state_final(automate,0);
+  ASSERT_FALSE(fa_is_language_empty(automate));
+  fa_destroy(automate);
+}
+
+TEST(AutomateTest, TestAccepteLVide_3) {
+  struct fa *automate = (struct fa*)malloc(sizeof(struct fa));
+  fa_create(automate,2,3);
+  fa_set_state_initial(automate,0);
+  fa_set_state_final(automate,2);
+  fa_add_transition(automate,0,'a',1);
+  fa_add_transition(automate,1,'a',2);
+  fa_add_transition(automate,2,'a',2);
+  ASSERT_FALSE(fa_is_language_empty(automate));
+  fa_destroy(automate);
+}
+
+TEST(AutomateTest, TestSupprEtatNonAcces) {
+  struct fa *automate = (struct fa*)malloc(sizeof(struct fa));
+  struct graph *gr = (struct graph*)malloc(sizeof(struct graph));
+  fa_create(automate,2,4);
+  bool tab[automate->state_count];
+  for (size_t j = 0; j < automate->state_count; j++) {
+    tab[j] = false;
+  }
+  fa_set_state_initial(automate,0);
+  fa_set_state_final(automate,1);
+  fa_add_transition(automate,0,'a',1);
+  fa_add_transition(automate,3,'a',1);
+  fa_add_transition(automate,2,'a',2);
+  fa_remove_non_accessible_states(automate);
+  graph_create_from_fa(gr,automate,false);
+  ASSERT_EQ(automate->state_count,2);
+  for (size_t i = 0; i < automate->state_count; i++) {
+    if (automate->states[i].is_initial) {
+      for (size_t k = 0; k < automate->state_count; k++) {
+        if (graph_has_path(gr,k,i)) {
+          tab[k] = true;
+        }
+      }
+    }
+  }
+  for (size_t r = 0; r < automate->state_count; r++) {
+    ASSERT_TRUE(tab[r]);
+  }
+  free(gr);
+  fa_destroy(automate);
+}
+
+TEST(AutomateTest, TestSupprEtatNonCoAcces) {
+  struct fa *automate = (struct fa*)malloc(sizeof(struct fa));
+  struct graph *gr = (struct graph*)malloc(sizeof(struct graph));
+  fa_create(automate,2,5);
+  bool tab[automate->state_count];
+  for (size_t j = 0; j < automate->state_count; j++) {
+    tab[j] = false;
+  }
+  fa_set_state_initial(automate,0);
+  fa_set_state_final(automate,2);
+  fa_add_transition(automate,0,'a',1);
+  fa_add_transition(automate,1,'b',2);
+  fa_add_transition(automate,1,'a',3);
+  fa_add_transition(automate,2,'a',4);
+      printf("////////////////////////////////////////1\n");
+  fa_remove_non_co_accessible_states(automate);
+        printf("////////////////////////////////////////2\n");
+  graph_create_from_fa(gr,automate,false);
+  ASSERT_EQ(automate->state_count,3);
+  for (size_t i = 0; i < automate->state_count; i++) {
+    if (automate->states[i].is_final) {
+      for (size_t k = 0; k < automate->state_count; k++) {
+        if (graph_has_path(gr,k,i)) {
+          tab[k] = true;
+        }
+      }
+    }
+  }
+  for (size_t r = 0; r < automate->state_count; r++) {
+    ASSERT_TRUE(tab[r]);
+  }
+  free(gr);
+  fa_destroy(automate);
+}
+
 // TEST(AutomateTest, TestCreatProduit) {
 //
 // }
