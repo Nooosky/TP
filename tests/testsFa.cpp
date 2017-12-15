@@ -175,19 +175,19 @@ TEST(AutomateTest, TestEstComplet_3) {
 }
 
 // Renvoie une seg fault sur mon poste (LINUX) mais pas sur l'autre poste (MAC)
- // TEST(AutomateTest, TestCompletionAutomate) {
- //   struct fa *automate = (struct fa*)malloc(sizeof(struct fa));
- //   fa_create(automate,2,3);
- //   fa_add_transition(automate,0,'a',1);
- //   fa_add_transition(automate,0,'b',2);
- //   fa_add_transition(automate,1,'a',1);
- //   fa_add_transition(automate,1,'b',0);
- //   fa_add_transition(automate,2,'a',1);
- //   ASSERT_FALSE(fa_is_complete(automate));
- //   fa_make_complete(automate);
- //   ASSERT_TRUE(fa_is_complete(automate));
- //   fa_destroy(automate);
- // }
+ TEST(AutomateTest, TestCompletionAutomate) {
+   struct fa *automate = (struct fa*)malloc(sizeof(struct fa));
+   fa_create(automate,2,3);
+   fa_add_transition(automate,0,'a',1);
+   fa_add_transition(automate,0,'b',2);
+   fa_add_transition(automate,1,'a',1);
+   fa_add_transition(automate,1,'b',0);
+   fa_add_transition(automate,2,'a',1);
+   ASSERT_FALSE(fa_is_complete(automate));
+   fa_make_complete(automate);
+   ASSERT_TRUE(fa_is_complete(automate));
+   fa_destroy(automate);
+ }
 
 
 TEST(AutomateTest, TestParcoursProf_1) {
